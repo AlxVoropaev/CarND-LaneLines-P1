@@ -1,47 +1,42 @@
 # **Finding Lane Lines on the Road** 
 
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file. But feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Finding Lane Lines on the Road**
-
-The goals / steps of this project are the following:
-* Make a pipeline that finds lane lines on the road
-* Reflect on your work in a written report
-
-
-[//]: # (Image References)
-
-[image1]: ./examples/grayscale.jpg "Grayscale"
-
----
 
 ### Reflection
 
-### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
+### 1.Pipeline
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
+My pipeline consisted of following steps:
+1. convert input to grayscale
+2. smooth noice with gaussian with kernel=3
+3. find edges by canny detector
+4. cut region of interest
+5. find lines using hough_lines
 
-In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
+hough_lines is modified to drop lines with incorrect slope.
 
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
+All parametes are tuned by hands.
 
-![alt text][image1]
+In order to draw a single line on the left and right lanes, I modified the draw_lines() function by
+1. split all input lines to left and right groups
+2. for each group
+    1. filter outliers by mean/std statistic
+    2. compute average slope/intercept
+    3. comput two poins with y = 540, 320
+    4. draw single line
 
+### 2. Potential shortcomings
 
-### 2. Identify potential shortcomings with your current pipeline
+- It is possible that no lines will be found
+- Sometimes extra lines at road will be found (not lane lines, just defects on asphalt)
+- The geometry of camera is not linear, as a result straight lines are not straight
+- Parameters are not optimal
 
+### 3. Possible improvements to the pipeline
 
-One potential shortcoming would be what would happen when ... 
+- If line is not found we can make parameters more weak and repeat search
+- If we found one line (e.g. left) we can use information about this to find another one (right)
+- We can make parameters more weak and use statistical filtering in hough_lines
+- We can fix camera geometry
+- We can tune parameters (but we need train/test sets on images with lines annotation)
 
-Another shortcoming could be ...
-
-
-### 3. Suggest possible improvements to your pipeline
-
-A possible improvement would be to ...
-
-Another potential improvement could be to ...
+PS. Sorry for my english :)
